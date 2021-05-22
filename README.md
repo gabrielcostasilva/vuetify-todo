@@ -5,30 +5,29 @@ This project is based on ["Make Apps with Danny" Vuetify demonstration](https://
 
 The original demonstration finishes with several challenges that are addressed in the author's course. I took it as a personal challenge and tried to implement some of them.
 
-This branch features the first challenge: to add a central component that shows there is no task.
+This branch features the second challenge: to add a notification when a task is added, deleted or changed.
 
-<img src="./pics/NoTask.png" />
+<img src="./pics/Notification.gif" />
 
-Firstly, I have to check whether there are tasks in the array. The `v-if="tasks.length"` directive implements such a check. Thus, the task list is only shown if there is at least one task. Next, I added a `v-else` directive to show another `div` that contains the icon and the message.
+Firstly, I just copy and paste the `snackbar` component from Vuetify documentation. 
 
 ```
-<div v-else>
-    <v-container>
-        <v-row>
-          <v-col class="d-flex justify-center align-center">
-            <div class="mt-16">
-    
-              <v-icon color="blue lighten-4" class="text-h1">
-                mdi-check
-              </v-icon>
+<v-snackbar v-model="snackbar">
+  {{snackbarMessage}}
 
-              <h2 class="blue--text text--lighten-4">No tasks</h2>
-    
-            </div>
-          </v-col>
-        </v-row>
-    </v-container>
-</div>
+  <template v-slot:action="{ attrs }">
+    <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
+      Close
+    </v-btn>
+  </template>
+</v-snackbar>
 ```
 
-I used the grid system to create a container. I also used `d-flex` to enable horizontal alignment. The real trouble is the vertical alignment. I was unable to set this properly. Therefore, I added a large top margin with `mt-16` class.
+Then, I added the `snackbar` and `snackbarMessage` data properties into my `data()`. Whereas the former controls the snackbar visibility, the latter represents the message snackbar shows.
+
+Finally, for each method, add, delete, change, I added two lines of code setting the message and the snackbar visibility.
+
+```
+this.snackbarMessage = 'Task added!'
+this.snackbar = true 
+```

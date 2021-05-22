@@ -43,6 +43,16 @@
           <v-divider></v-divider>
         </div>
       </v-list>
+
+      <v-snackbar v-model="snackbar">
+        {{snackbarMessage}}
+
+        <template v-slot:action="{ attrs }">
+          <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </div>
 
     <div v-else>
@@ -67,6 +77,8 @@
 export default {
   data() {
     return {
+      snackbar: false,
+      snackbarMessage: '',
       newTaskTitle: '',
       tasks: [
         {
@@ -91,13 +103,21 @@ export default {
     doneTask(id) {
       let task = this.tasks.filter((item) => item.id === id)[0]
       task.done = !task.done
+
+      this.snackbarMessage = 'Task changed!'
+      this.snackbar = true
     },
     deleteTask(id) {
       this.tasks = this.tasks.filter((item) => item.id !== id)
+
+      this.snackbarMessage = 'Task removed!'
+      this.snackbar = true
     },
     addTask() {
       this.tasks.push({ id: Date.now(), title: this.newTaskTitle, done: false })
 
+      this.snackbarMessage = 'Task added!'
+      this.snackbar = true
       this.newTaskTitle = ''
     },
   },
