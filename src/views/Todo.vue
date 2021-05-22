@@ -33,9 +33,30 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-btn icon @click.stop="deleteTask(task.id)">
-                  <v-icon color="primary lighten-1">mdi-delete</v-icon>
-                </v-btn>
+                <v-menu bottom left>
+                  <template v-slot:activator="{ on }">
+                    <v-btn dark icon v-on="on">
+                      <v-icon color="primary">mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, i) in items"
+                      :key="i"
+                      @click="taskAction(item.title, task.id)"
+                      link
+                    >
+                      <v-list-item-action>
+                        <v-icon>{{ item.icon }}</v-icon>
+                      </v-list-item-action>
+
+                      <v-list-item-content>
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </v-list-item-action>
             </template>
           </v-list-item>
@@ -45,7 +66,7 @@
       </v-list>
 
       <v-snackbar v-model="snackbar">
-        {{snackbarMessage}}
+        {{ snackbarMessage }}
 
         <template v-slot:action="{ attrs }">
           <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
@@ -70,6 +91,39 @@
         </v-row>
       </v-container>
     </div>
+
+    <v-dialog v-model="editDialog">
+        <v-card>
+          <v-card-title>
+            Edit task
+          </v-card-title>
+
+          <v-card-text>
+            Edit the title of the task:
+
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                  label="Task"
+                  v-model="currentTask.title"
+                ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn plain @click="editDialog = false">
+              CANCEL
+            </v-btn>
+            <v-btn plain color="red" @click="saveEdit">
+              SAVE
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
   </div>
 </template>
 
@@ -77,6 +131,14 @@
 export default {
   data() {
     return {
+      currentTask: {},
+      editDialog: false,
+      items: [
+        { title: 'Edit', icon: 'mdi-pencil' },
+        { title: 'Due Date', icon: 'mdi-calendar' },
+        { title: 'Delete', icon: 'mdi-delete' },
+        { title: 'Sort', icon: 'mdi-sort' },
+      ],
       snackbar: false,
       snackbarMessage: '',
       newTaskTitle: '',
@@ -119,6 +181,21 @@ export default {
       this.snackbarMessage = 'Task added!'
       this.snackbar = true
       this.newTaskTitle = ''
+    },
+    saveEdit() {
+      const taskFound = this.tasks.find(item => item.id === this.currentTask.id)
+      taskFound.title = this.currentTask.title
+      this.editDialog = false
+
+      this.snackbarMessage = 'Task updated!'
+      this.snackbar = true
+    },
+    taskAction(action, taskId) {
+      if (action === 'Edit') {
+        const taskFound = this.tasks.find(item => item.id === taskId)
+        this.currentTask = taskFound
+        this.editDialog = true
+      }
     },
   },
 }
