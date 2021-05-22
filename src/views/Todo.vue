@@ -12,35 +12,54 @@
       @keyup.enter="addTask"
     >
     </v-text-field>
-    <v-list class="pt-0" flat>
-      <div v-for="task in tasks" :key="task.id">
-        <v-list-item
-          @click="doneTask(task.id)"
-          :class="{ 'blue lighten-5': task.done }"
-        >
-          <template #default>
-            <v-list-item-action>
-              <v-checkbox :input-value="task.done"></v-checkbox>
-            </v-list-item-action>
 
-            <v-list-item-content>
-              <v-list-item-title
-                :class="{ 'text-decoration-line-through': task.done }"
-                >{{ task.title }}</v-list-item-title
-              >
-            </v-list-item-content>
+    <div v-if="tasks.length">
+      <v-list class="pt-0" flat>
+        <div v-for="task in tasks" :key="task.id">
+          <v-list-item
+            @click="doneTask(task.id)"
+            :class="{ 'blue lighten-5': task.done }"
+          >
+            <template #default>
+              <v-list-item-action>
+                <v-checkbox :input-value="task.done"></v-checkbox>
+              </v-list-item-action>
 
-            <v-list-item-action>
-              <v-btn icon @click.stop="deleteTask(task.id)">
-                <v-icon color="primary lighten-1">mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </template>
-        </v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  :class="{ 'text-decoration-line-through': task.done }"
+                  >{{ task.title }}</v-list-item-title
+                >
+              </v-list-item-content>
 
-        <v-divider></v-divider>
-      </div>
-    </v-list>
+              <v-list-item-action>
+                <v-btn icon @click.stop="deleteTask(task.id)">
+                  <v-icon color="primary lighten-1">mdi-delete</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </template>
+          </v-list-item>
+
+          <v-divider></v-divider>
+        </div>
+      </v-list>
+    </div>
+
+    <div v-else>
+      <v-container>
+        <v-row>
+          <v-col class="d-flex justify-center align-center">
+            <div class="mt-16">
+              <v-icon color="blue lighten-4" class="text-h1">
+                mdi-check
+              </v-icon>
+
+              <h2 class="blue--text text--lighten-4">No tasks</h2>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
   </div>
 </template>
 
