@@ -33,34 +33,43 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-menu bottom left>
-                  <template v-slot:activator="{ on }">
-                    <v-btn dark icon v-on="on">
-                      <v-icon color="primary">mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </template>
+                <div class="d-flex justify-end">
+                  
+                  <v-list-item-action-text v-if="task.due">
+                    <v-icon>mdi-calendar</v-icon>
+                    {{ task.due }}
+                  </v-list-item-action-text>
 
-                  <v-list>
-                    <v-list-item
-                      v-for="(item, i) in items"
-                      :key="i"
-                      @click="taskAction(item.title, task.id)"
-                      link
-                    >
-                      <v-list-item-action>
-                        <v-icon>{{ item.icon }}</v-icon>
-                      </v-list-item-action>
+                  <v-menu bottom left>
+                    <template v-slot:activator="{ on }">
+                      <v-btn dark icon v-on="on">
+                        <v-icon color="primary">mdi-dots-vertical</v-icon>
+                      </v-btn>
+                    </template>
 
-                      <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                    <v-list>
+                      <v-list-item
+                        v-for="(item, i) in items"
+                        :key="i"
+                        @click="taskAction(item.title, task.id)"
+                        link
+                      >
+                        <v-list-item-action>
+                          <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-action>
+
+                        <v-list-item-content>
+                          <v-list-item-title>{{
+                            item.title
+                          }}</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
               </v-list-item-action>
             </template>
           </v-list-item>
-
           <v-divider></v-divider>
         </div>
       </v-list>
@@ -93,37 +102,46 @@
     </div>
 
     <v-dialog v-model="editDialog">
-        <v-card>
-          <v-card-title>
-            Edit task
-          </v-card-title>
+      <v-card>
+        <v-card-title> Edit task </v-card-title>
 
-          <v-card-text>
-            Edit the title of the task:
+        <v-card-text>
+          Edit the title of the task:
 
-            <v-container>
-              <v-row>
-                <v-col>
-                  <v-text-field
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-text-field
                   label="Task"
                   v-model="currentTask.title"
                 ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn plain @click="editDialog = false">
-              CANCEL
-            </v-btn>
-            <v-btn plain color="red" @click="saveEdit">
-              SAVE
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn plain @click="editDialog = false"> CANCEL </v-btn>
+          <v-btn plain color="red" @click="saveEdit"> SAVE </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showCalendar">
+      <v-card>
+        <v-card-text>
+          <v-row justify="center">
+            <v-date-picker class="mt-4" v-model="datePicker"></v-date-picker>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn plain @click="showCalendar = false"> CANCEL </v-btn>
+          <v-btn plain color="red" @click="saveDate()"> OK </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -131,6 +149,8 @@
 export default {
   data() {
     return {
+      showCalendar: false,
+      datePicker: null,
       currentTask: {},
       editDialog: false,
       items: [
@@ -147,16 +167,19 @@ export default {
           id: 1,
           title: 'Wake up',
           done: false,
+          due: null,
         },
         {
           id: 2,
           title: 'Take bananas',
           done: false,
+          due: null,
         },
         {
           id: 3,
           title: 'Eat bananas',
           done: false,
+          due: null,
         },
       ],
     }
@@ -183,7 +206,9 @@ export default {
       this.newTaskTitle = ''
     },
     saveEdit() {
-      const taskFound = this.tasks.find(item => item.id === this.currentTask.id)
+      const taskFound = this.tasks.find(
+        (item) => item.id === this.currentTask.id
+      )
       taskFound.title = this.currentTask.title
       this.editDialog = false
 
@@ -191,11 +216,23 @@ export default {
       this.snackbar = true
     },
     taskAction(action, taskId) {
-      if (action === 'Edit') {
-        const taskFound = this.tasks.find(item => item.id === taskId)
-        this.currentTask = taskFound
+      
+      const taskFound = this.tasks.find((item) => item.id === taskId)
+      this.currentTask = taskFound
+
+      if (action === 'Edit') {  
         this.editDialog = true
+        return
       }
+
+      if (action === 'Due Date') {
+        this.showCalendar = true
+        return
+      }
+    },
+    saveDate() {
+      this.currentTask.due = this.datePicker
+      this.showCalendar = false
     },
   },
 }
