@@ -53,10 +53,6 @@ The side menu is a `v-navigation-drawer` component. A `v-list-item` creates side
 
 Nothing special here. It is just a _Lorem ipsum_ page to demonstrate the Vue router in action. The `<v-main>` tag wraps the traditional `<router-view></router-view>`, where the pages are loaded.
 
-## Views and Components Overview
-
-<img src="./pics/ComponentTree.png" />
-
 ## Project setup
 ```
 yarn install
