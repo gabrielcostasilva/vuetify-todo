@@ -142,6 +142,23 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+
+    <v-dialog v-model="confirmDeleteDialog">
+      <v-card>
+        <v-card-title>Delete task?</v-card-title>
+
+        <v-card-text>
+          Are you sure you wanna delete this task?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn plain @click="confirmDeleteDialog = false"> NO </v-btn>
+          <v-btn plain color="red" @click="confirmDelete"> YES </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -149,6 +166,7 @@
 export default {
   data() {
     return {
+      confirmDeleteDialog: false,
       showCalendar: false,
       datePicker: null,
       currentTask: {},
@@ -229,11 +247,20 @@ export default {
         this.showCalendar = true
         return
       }
+
+      if (action === 'Delete') {
+        this.confirmDeleteDialog = true
+        return
+      }
     },
     saveDate() {
       this.currentTask.due = this.datePicker
       this.showCalendar = false
     },
+    confirmDelete() {
+      this.deleteTask(this.currentTask.id)
+      this.confirmDeleteDialog = false
+    }
   },
 }
 </script>
